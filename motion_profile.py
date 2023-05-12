@@ -28,3 +28,18 @@ class MotionProfile:
         self.accels[time] = 0
       self.vels[time] = self.vels[time - 1] + self.accels[time]/1000
       self.pos[time] = self.pos[time - 1] + self.vels[time]/1000
+
+  def get_pos(self, time):
+    time *= 1000
+    time = time if time <= self.duration else round(self.duration)-1
+    return self.pos[time]
+
+  def get_vel(self, time):
+    time *= 1000
+    time = time if time <= self.duration else round(self.duration)-1
+    return self.vels[time]
+  
+  def get_acc(self, time):
+    time *= 1000
+    time = time if time <= self.duration else round(self.duration)-1
+    return self.accels[time]
