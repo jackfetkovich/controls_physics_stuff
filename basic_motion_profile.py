@@ -1,16 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
-max_vel = 8
-max_accel = 5
+max_vel = 15
+max_accel = 3
 current_pos = 0
-final_pos = 50
+final_pos = 5
 
 # all times in ms
 time_to_max_vel = (max_vel / max_accel) * 1000
 accel_dist = max_accel * (time_to_max_vel/1000)**2
 remaining_dist = final_pos - current_pos - accel_dist
 time_in_max_vel = (remaining_dist / max_vel) * 1000
+
+if 2*accel_dist > final_pos - current_pos:
+  time_to_max_vel = math.sqrt(2 * accel_dist / max_accel) * 1000
+  time_in_max_vel = 0
 
 profile_time = 2 * time_to_max_vel + time_in_max_vel
 
@@ -32,14 +37,11 @@ for time in range(round(profile_time)):
 plt.figure()
 plt.subplot(311)
 plt.plot(times, pos)
-plt.title("Position(m) vs Time(ms)")
 
 plt.subplot(312)
 plt.plot(times,vels)
-plt.title("Velocity(m/s) vs Time(ms)")
 
 plt.subplot(313)
 plt.plot(times,accels)
-plt.title("Acceleration(m/s/s) vs Time(ms)")
 
 plt.show()
