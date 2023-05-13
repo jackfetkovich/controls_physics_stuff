@@ -14,6 +14,7 @@ class MotionProfile:
 
     profile_time = 2 * time_to_max_vel + time_in_max_vel
 
+
     self.pos = np.zeros(round(profile_time), dtype="float")
     self.vels = np.zeros(round(profile_time), dtype="float")
     self.accels = np.zeros(round(profile_time),dtype="float")
@@ -31,15 +32,18 @@ class MotionProfile:
 
   def get_pos(self, time):
     time *= 1000
+    time = int(time)
     time = time if time <= self.duration else round(self.duration)-1
     return self.pos[time]
 
   def get_vel(self, time):
     time *= 1000
+    time=int(time)
     time = time if time <= self.duration else round(self.duration)-1
     return self.vels[time]
   
   def get_acc(self, time):
     time *= 1000
+    time=int(time)
     time = time if time <= self.duration else round(self.duration)-1
     return self.accels[time]
