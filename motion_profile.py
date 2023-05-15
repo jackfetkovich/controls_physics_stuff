@@ -3,47 +3,49 @@ import math
 
 class MotionProfile:
   def __init__(self, max_vel, max_accel, final_pos, current_pos=0):
-    time_to_max_vel = (max_vel / max_accel) * 1000
-    accel_dist = max_accel * (time_to_max_vel/1000)**2
-    remaining_dist = final_pos - current_pos - accel_dist
-    time_in_max_vel = (remaining_dist / max_vel) * 1000
+    self.time_to_max_vel = (max_vel / max_accel)
+    self.accel_dist = max_accel * (self.time_to_max_vel)**2
+    self.remaining_dist = final_pos - current_pos - self.accel_dist
+    self.time_in_max_vel = (self.remaining_dist / max_vel) 
     
-    if 2*accel_dist > final_pos - current_pos:
-      time_to_max_vel = math.sqrt(2 * accel_dist / max_accel) * 1000
-      time_in_max_vel = 0
+    if 2*self.accel_dist > final_pos - current_pos:
+      self.time_to_max_vel = math.sqrt(2 * self.accel_dist / max_accel)
+      self.time_in_max_vel = 0
 
-    profile_time = 2 * time_to_max_vel + time_in_max_vel
+    profile_time = 2 * self.time_to_max_vel + self.time_in_max_vel
 
-
-    self.pos = np.zeros(round(profile_time), dtype="float")
-    self.vels = np.zeros(round(profile_time), dtype="float")
-    self.accels = np.zeros(round(profile_time),dtype="float")
+    self.max_vel = max_vel
+    self.max_accel = max_accel
+    self.final_pos = final_pos
+    self.current_pos = current_pos
     self.duration = profile_time
-
-    for time in range(round(profile_time)):
-      if time < time_to_max_vel:
-        self.accels[time] = max_accel * (abs(final_pos - current_pos) / (final_pos - current_pos))
-      elif time > time_in_max_vel + time_to_max_vel:
-        self.accels[time] = -max_accel* (abs(final_pos - current_pos) / (final_pos - current_pos))
-      else:
-        self.accels[time] = 0
-      self.vels[time] = self.vels[time - 1] + self.accels[time]/1000
-      self.pos[time] = self.pos[time - 1] + self.vels[time]/1000
+    self.direction = abs(self.final_pos - self.current_pos) / (self.final_pos - self.current_pos)
 
   def get_pos(self, time):
-    time *= 1000
-    time = int(time)
-    time = time if time <= self.duration else round(self.duration)-1
-    return self.pos[time]
+    if time <= self.time_to_max_vel:
+      return 0.5 * self.max_accel * time**2 * self.direction
+    elif time > self.time_to_max_vel and time <= self.time_in_max_vel + self.time_to_max_vel:
+      return self.get_pos(self.time_to_max_vel) + self.get_vel(time) * (time - self.time_to_max_vel)
+    elif time < self.duration:
+      # DVAT???
+      return self.get_pos(self.time_in_max_vel + self.time_to_max_vel) + self.get_vel(time) * (time - self.time_in_max_vel - self.time_to_max_vel) + 0.5 * self.max_accel* self.direction * (time - self.time_in_max_vel - self.time_to_max_vel)**2 
+    else:
+      return self.final_pos
 
   def get_vel(self, time):
-    time *= 1000
-    time=int(time)
-    time = time if time <= self.duration else round(self.duration)-1
-    return self.vels[time]
+    if time < self.time_to_max_vel:
+      return self.get_acc(time) * time
+    elif time > self.time_in_max_vel + self.time_to_max_vel and time < self.duration:
+      return self.max_vel * self.direction + self.get_acc(time)*(time-self.time_to_max_vel-self.time_in_max_vel)
+    elif time < self.duration:
+      return self.max_vel * self.direction
+    else: 
+      return 0
   
   def get_acc(self, time):
-    time *= 1000
-    time=int(time)
-    time = time if time <= self.duration else round(self.duration)-1
-    return self.accels[time]
+    if time < self.time_to_max_vel:
+      return self.max_accel * self.direction
+    elif time > self.time_in_max_vel + self.time_to_max_vel and time < self.duration:
+      return -self.max_accel * self.direction
+    else:
+      return 0
