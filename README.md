@@ -13,3 +13,6 @@
     profile.get_pos(time) --> double
     profile.get_vel(time) --> double
     profile.get_acc(time) --> double
+
+### Demonstration
+[Constant Acceleration Profile](/assets/profile.gif)
