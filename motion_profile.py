@@ -1,6 +1,9 @@
 import numpy as np
 import math
 
+"""
+Generates simple constant-acceleration motion profiles
+"""
 class MotionProfile:
   def __init__(self, max_vel, max_accel, final_pos, current_pos=0):
     self.time_to_max_vel = (max_vel / max_accel)
