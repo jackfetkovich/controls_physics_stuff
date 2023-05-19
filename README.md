@@ -15,4 +15,4 @@
     profile.get_acc(time) --> double
 
 ### Demonstration
-[Constant Acceleration Profile](/assets/profile.gif)
+![Constant Acceleration Profile](/assets/profile.gif)
